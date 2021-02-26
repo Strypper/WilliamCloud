@@ -1,7 +1,7 @@
-var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://localhost:1883')
-var topic = 'TrashChannel'
-var message = 'Hello world from the cloud !'
+const mqtt = require('mqtt')
+const client = mqtt.connect('mqtt://localhost:1883')
+const topic = 'TrashChannel'
+const message = 'Hello world from the cloud !'
 
 client.on('connect', () => {
     setInterval(() => {
