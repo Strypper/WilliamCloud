@@ -12,7 +12,6 @@ const mqttPort = 1883;
 
 //MONGOOSE
 const mongoose = require('mongoose');
-const { stringify } = require('querystring');
 
 mongoose.connect('mongodb://localhost/William', {
             useNewUrlParser: true,
@@ -23,17 +22,37 @@ mongoose.connect('mongodb://localhost/William', {
         .then(() => console.log('Sucessfully connect to MongoDb'))
         .catch(err => console.log(err));
 
-const deviceSchema = new mongoose.Schema({
+const commandCenterSchema = new mongoose.Schema({
     name: String,
+    model: String,
+    status: Boolean,
+    connectedDevices: Number,
+    ledStatus: Boolean,
+    fanStatus: Boolean,
     type: String,
-    channel: String
+    channel: String,
 });
 
-const CommandCenter = mongoose.model('Device', deviceSchema);
+const tc1Schema = new mongoose.Schema({
+    name: String,
+    model: String,
+    status: Boolean,
+    trashCapacity: Number,
+    currentCapacity: Number,
+    isOpen: Boolean
+})
+
+const CommandCenter = mongoose.model('CommandCenters', commandCenterSchema);
+const TC1 = mongoose.model('TC1s', tc1Schema);
 
 async function createCommandCenter(){
     const commandCenter = new CommandCenter({
         name: 'Command Center',
+        model: 'Raspberry pi 3',
+        status: false,
+        connectedDevices: 0,
+        ledStatus: false,
+        fanStatus: false,
         type: 'Control Center',
         channel: 'ControlCenterChannel'
     })
@@ -42,7 +61,24 @@ async function createCommandCenter(){
     console.log(result);
 }
 
+
+async function createTC1(){
+    const tc1 = new TC1({
+        name: 'Trash Can',
+        model: 'TC1',
+        status: false,
+        trashCapacity: 10,
+        currentCapacity: 70
+    })
+    
+    const result = await tc1.save();
+    console.log(result);
+}
+
+
 createCommandCenter();
+createTC1();
+
 
 app.use('/api/devices', devices);
 app.listen(expressPort, () => console.log(`Listening on port ${expressPort}`));
